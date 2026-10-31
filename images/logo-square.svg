@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" width="1080" height="1080">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff8fbb"/>
+      <stop offset="0.55" stop-color="#e8457f"/>
+      <stop offset="1" stop-color="#b06cff"/>
+    </linearGradient>
+  </defs>
+  <rect width="1080" height="1080" fill="url(#bg)"/>
+
+  <!-- flower mark -->
+  <g transform="translate(540 430)">
+    <g fill="#ffffff" opacity="0.95">
+      <ellipse cx="0" cy="-118" rx="80" ry="118"/>
+      <ellipse cx="0" cy="-118" rx="80" ry="118" transform="rotate(72)"/>
+      <ellipse cx="0" cy="-118" rx="80" ry="118" transform="rotate(144)"/>
+      <ellipse cx="0" cy="-118" rx="80" ry="118" transform="rotate(216)"/>
+      <ellipse cx="0" cy="-118" rx="80" ry="118" transform="rotate(288)"/>
+    </g>
+    <circle r="66" fill="#fff3a8"/>
+    <path d="M0 24 C-28 -4 -52 -28 -28 -48 C-12 -60 0 -44 0 -36 C0 -44 12 -60 28 -48 C52 -28 28 -4 0 24 Z" fill="#e8457f"/>
+  </g>
+
+  <text x="540" y="860" text-anchor="middle" font-family="Georgia, 'Playfair Display', serif" font-size="150" font-weight="700" fill="#ffffff">Cramp<tspan font-style="italic" fill="#fff3a8">Ease</tspan></text>
+</svg>

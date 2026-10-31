@@ -91,9 +91,9 @@ h1, h2, h3 { font-family: var(--display); line-height: 1.15; }
   backdrop-filter: blur(14px);
   box-shadow: 0 10px 30px -18px rgba(74,35,64,.35);
 }
-.logo { font-family: var(--display); font-weight: 700; font-size: 1.5rem; }
-.logo span { color: var(--rose); font-style: italic; }
-.logo i { font-style: normal; display: inline-block; animation: spin 8s linear infinite; }
+.logo { font-family: var(--display); font-weight: 700; font-size: 1.5rem; display: inline-flex; align-items: center; gap: 8px; }
+.logo span { color: var(--rose); font-style: italic; margin-left: -8px; }
+.logo-mark { width: 36px; height: 36px; animation: spin 14s linear infinite; }
 .nav-links { display: flex; gap: 26px; font-weight: 600; }
 .nav-links a { position: relative; }
 .nav-links a::after {
