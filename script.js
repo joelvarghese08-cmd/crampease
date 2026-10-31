@@ -4,8 +4,8 @@
 
 // Paste your Razorpay Payment Page links here (razorpay.com → Payment Pages).
 // ONLINE_LINK = page for the full online price, COD_LINK = page for the COD advance.
-const ONLINE_LINK = "";
-const COD_LINK = "";
+const ONLINE_LINK = "https://rzp.io/rzp/crampease-online";
+const COD_LINK = "https://rzp.io/rzp/crampease-cod";
 
 const COD_EXTRA = 50;   // COD costs this much more than paying online
 const COD_ADVANCE = 99; // paid online to confirm a COD order; the rest is paid on delivery
