@@ -62,6 +62,22 @@ function wirePay(selector, link) {
 wirePay("[data-pay=online]", ONLINE_LINK);
 wirePay("[data-pay=cod]", COD_LINK);
 
+// Meta Pixel events (the base PageView is in index.html)
+const track = (event, data) => window.fbq && fbq("track", event, data);
+const productData = (value) => ({
+  content_name: PRODUCTS[0].name,
+  content_type: "product",
+  value,
+  currency: "INR",
+});
+track("ViewContent", productData(price));
+document.querySelectorAll("[data-pay=online]").forEach((a) =>
+  a.addEventListener("click", () => track("InitiateCheckout", productData(price)))
+);
+document.querySelectorAll("[data-pay=cod]").forEach((a) =>
+  a.addEventListener("click", () => track("InitiateCheckout", productData(price + COD_EXTRA)))
+);
+
 function toast(msg) {
   const t = document.createElement("div");
   t.className = "toast";
