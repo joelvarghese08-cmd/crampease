@@ -62,6 +62,54 @@ function wirePay(selector, link) {
 wirePay("[data-pay=online]", ONLINE_LINK);
 wirePay("[data-pay=cod]", COD_LINK);
 
+// Facebook/Instagram open links in their own in-app browser, where UPI apps (GPay, PhonePe, Paytm)
+// often fail to open and payments time out. Steer those visitors to a real browser before paying.
+const ua = navigator.userAgent || "";
+const forced = (location.search.match(/[?&]inapp=(android|ios)/) || [])[1]; // ?inapp=ios to preview
+const inApp = !!forced || /FBAN|FBAV|FB_IAB|FBIOS|Instagram/i.test(ua);
+const isAndroid = forced ? forced === "android" : /Android/i.test(ua);
+const inChrome = (url) =>
+  `intent://${url.replace(/^https?:\/\//, "")}#Intent;scheme=https;package=com.android.chrome;` +
+  `S.browser_fallback_url=${encodeURIComponent(url)};end`;
+
+if (inApp) {
+  const bar = document.createElement("div");
+  bar.className = "inapp-bar";
+  bar.innerHTML = isAndroid
+    ? `💳 Paying by UPI? <a href="${inChrome(location.href)}">Open in Chrome</a> for a smooth payment`
+    : `💳 Paying by UPI? Tap <b>•••</b> (top right) → <b>Open in browser</b> first`;
+  document.body.prepend(bar);
+
+  document.querySelectorAll("[data-pay]").forEach((a) =>
+    a.addEventListener("click", (e) => {
+      const link = a.dataset.pay === "cod" ? COD_LINK : ONLINE_LINK;
+      if (!link) return;
+      e.preventDefault();
+      if (isAndroid) {
+        location.href = inChrome(link); // opens the Razorpay page straight in Chrome
+      } else {
+        payTip(link);
+      }
+    })
+  );
+}
+
+function payTip(link) {
+  const m = document.createElement("div");
+  m.className = "pay-tip";
+  m.innerHTML = `
+    <div class="pay-tip-card">
+      <h3>One quick step 💗</h3>
+      <p>UPI apps can't open inside Instagram/Facebook. Tap <b>•••</b> at the top right,
+         choose <b>Open in browser</b>, then tap Pay again.</p>
+      <a class="btn" href="${link}" target="_blank" rel="noopener">Continue here anyway</a>
+      <button class="btn btn-ghost" type="button">Close</button>
+    </div>`;
+  m.querySelector("button").onclick = () => m.remove();
+  m.onclick = (e) => e.target === m && m.remove();
+  document.body.appendChild(m);
+}
+
 // Meta Pixel events (the base PageView is in index.html)
 const track = (event, data) => window.fbq && fbq("track", event, data);
 const productData = (value) => ({

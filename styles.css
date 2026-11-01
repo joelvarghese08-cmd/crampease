@@ -347,6 +347,25 @@ details p { margin-top: 10px; color: var(--muted); }
 }
 @keyframes toastIn { from { opacity: 0; transform: translate(-50%, 16px); } }
 
+/* shown only inside Facebook/Instagram's in-app browser */
+.inapp-bar {
+  position: sticky; top: 0; z-index: 40;
+  padding: 10px 16px; text-align: center; font-weight: 600; font-size: .92rem;
+  color: var(--white); background: linear-gradient(90deg, var(--rose), #b06cff);
+}
+.inapp-bar a { color: #fff3a8; text-decoration: underline; }
+.pay-tip {
+  position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; padding: 16px;
+  background: rgba(74,35,64,.55);
+}
+.pay-tip-card {
+  max-width: 380px; background: var(--white); border-radius: 24px; padding: 26px; text-align: center;
+  box-shadow: var(--shadow);
+}
+.pay-tip-card h3 { font-size: 1.4rem; margin-bottom: 8px; }
+.pay-tip-card p { color: var(--muted); margin-bottom: 18px; }
+.pay-tip-card .btn { width: 100%; justify-content: center; margin-top: 8px; }
+
 .footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 20px; margin-top: 14px; font-weight: 600; }
 .footer-links a:hover { color: var(--rose); }
 
