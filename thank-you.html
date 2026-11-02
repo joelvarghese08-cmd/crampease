@@ -30,10 +30,11 @@
     // Razorpay's own "payment complete" pixel event never reached Meta, so the Purchase is sent from here.
     // value = the full order value, so Meta learns what a sale is worth. Sent once per payment (reloads don't repeat it).
     (function () {
+      //   thank-you.html?type=codfull&order_id=...  (COD order form, nothing paid yet, ₹649 on delivery)
       var q = new URLSearchParams(location.search);
-      var type = q.get("type") === "cod" ? "cod" : "online";
-      var value = type === "cod" ? 649 : 599;
-      var payId = q.get("razorpay_payment_id") || q.get("payment_id") || "";
+      var type = ["cod", "codfull"].indexOf(q.get("type")) >= 0 ? q.get("type") : "online";
+      var value = type === "online" ? 599 : 649;
+      var payId = q.get("razorpay_payment_id") || q.get("payment_id") || q.get("order_id") || "";
       var key = "purchase_sent:" + (payId || type + ":" + new Date().toDateString());
       var sent = false;
       try { sent = localStorage.getItem(key) === "1"; } catch (e) {}
@@ -57,16 +58,18 @@
 
   <main class="policy thanks">
     <h1>Thank you, <em>lovely!</em> 💗</h1>
-    <p class="muted">Your order is confirmed. A warm hug is on its way to you.</p>
+    <p class="muted">Your order is in. A warm hug is on its way to you.</p>
 
     <section>
       <h2>What happens next</h2>
       <ul>
         <li data-type="online">You've paid <b>₹599</b> in full — nothing more to pay at delivery.</li>
         <li data-type="cod">Your <b>₹99</b> advance is received. Please keep <b>₹550</b> ready to pay when your parcel arrives.</li>
+        <li data-type="codfull">Your cash on delivery order is placed. <b>We'll call or WhatsApp you shortly to confirm</b> — please keep your phone handy.</li>
+        <li data-type="codfull">Keep <b>₹649</b> ready to pay in cash when your parcel arrives.</li>
         <li>We dispatch within 1–2 working days. Delivery usually takes 4–7 working days, and it's free.</li>
         <li>You'll get tracking details by SMS once it ships.</li>
-        <li>Razorpay has emailed you a payment receipt.</li>
+        <li data-type="online">Razorpay has emailed you a payment receipt.</li>
       </ul>
     </section>
 

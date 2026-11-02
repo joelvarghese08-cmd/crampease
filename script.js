@@ -8,7 +8,12 @@ const ONLINE_LINK = "https://rzp.io/rzp/crampease-online";
 const COD_LINK = "https://rzp.io/rzp/crampease-cod";
 
 const COD_EXTRA = 50;   // COD costs this much more than paying online
-const COD_ADVANCE = 99; // paid online to confirm a COD order; the rest is paid on delivery
+const COD_ADVANCE = 99; // old COD-with-advance page (COD_LINK); COD orders now use the form below
+
+// COD orders need no payment: the order form posts to this Google Apps Script web app
+// (it saves each order to the "CrampEase COD orders" Google Sheet; the order bot alerts on Telegram).
+const COD_FORM_URL =
+  "https://script.google.com/macros/s/AKfycbwQ7ZneGRMl_8QEkYPREiLBJeEs8tnnosgES52BEJ3w47vwuH3gNg-WRqc79yv2tVS62A/exec";
 
 // Put product photos in the /images folder and write the file name below.
 // price = your selling price, mrp = crossed-out price (optional), badge = small tag (optional)
@@ -60,7 +65,12 @@ function wirePay(selector, link) {
   });
 }
 wirePay("[data-pay=online]", ONLINE_LINK);
-wirePay("[data-pay=cod]", COD_LINK);
+document.querySelectorAll("[data-pay=cod]").forEach((a) =>
+  a.addEventListener("click", (e) => {
+    e.preventDefault();
+    codForm();
+  })
+);
 
 // Facebook/Instagram open links in their own in-app browser, where UPI apps (GPay, PhonePe, Paytm)
 // often fail to open and payments time out. Steer those visitors to a real browser before paying.
@@ -76,13 +86,14 @@ if (inApp) {
   const bar = document.createElement("div");
   bar.className = "inapp-bar";
   bar.innerHTML = isAndroid
-    ? `💳 Paying by UPI? <a href="${inChrome(location.href)}">Open in Chrome</a> for a smooth payment`
-    : `💳 Paying by UPI? Tap <b>•••</b> (top right) → <b>Open in browser</b> first`;
+    ? `💳 Paying by UPI? <a href="${inChrome(location.href)}">Open in Chrome</a> · or choose Cash on Delivery`
+    : `💳 Paying by UPI? Tap <b>•••</b> → <b>Open in browser</b> · or choose Cash on Delivery`;
   document.body.prepend(bar);
 
-  document.querySelectorAll("[data-pay]").forEach((a) =>
+  // only online payment needs a real browser; the COD form works fine in the in-app browser
+  document.querySelectorAll("[data-pay=online]").forEach((a) =>
     a.addEventListener("click", (e) => {
-      const link = a.dataset.pay === "cod" ? COD_LINK : ONLINE_LINK;
+      const link = ONLINE_LINK;
       if (!link) return;
       e.preventDefault();
       if (isAndroid) {
@@ -108,6 +119,62 @@ function payTip(link) {
   m.querySelector("button").onclick = () => m.remove();
   m.onclick = (e) => e.target === m && m.remove();
   document.body.appendChild(m);
+}
+
+// Cash on delivery order form: no payment, we call to confirm. On success -> thank-you page (fires Purchase).
+function codForm() {
+  const m = document.createElement("div");
+  m.className = "pay-tip cod-form";
+  m.innerHTML = `
+    <form class="pay-tip-card" novalidate>
+      <h3>Cash on delivery 💗</h3>
+      <p>Nothing to pay now — pay <b>₹${price + COD_EXTRA}</b> in cash when it arrives. We'll call to confirm.</p>
+      <label>Full name<input name="name" autocomplete="name" required maxlength="80" /></label>
+      <label>Phone (10 digits)<input name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" required maxlength="14" /></label>
+      <label>Full address (house, street, landmark)<textarea name="address" rows="2" autocomplete="street-address" required maxlength="300"></textarea></label>
+      <div class="cod-row">
+        <label>Pincode<input name="pincode" inputmode="numeric" autocomplete="postal-code" required maxlength="6" /></label>
+        <label>City &amp; state<input name="city_state" autocomplete="address-level2" required maxlength="80" /></label>
+      </div>
+      <input name="website" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true" />
+      <p class="cod-error" role="alert"></p>
+      <button class="btn" type="submit">Place COD order · ₹${price + COD_EXTRA}</button>
+      <button class="btn btn-ghost" type="button" data-close>Close</button>
+    </form>`;
+  const form = m.querySelector("form");
+  const err = m.querySelector(".cod-error");
+  m.querySelector("[data-close]").onclick = () => m.remove();
+  m.onclick = (e) => e.target === m && m.remove();
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const d = Object.fromEntries(new FormData(form));
+    d.phone = d.phone.replace(/\D/g, "").slice(-10);
+    const bad =
+      !d.name.trim() ? "Please enter your name." :
+      d.phone.length !== 10 ? "Please enter a 10-digit phone number." :
+      d.address.trim().length < 10 ? "Please enter your full address." :
+      !/^\d{6}$/.test(d.pincode.trim()) ? "Please enter a 6-digit pincode." :
+      !d.city_state.trim() ? "Please enter your city and state." : "";
+    if (bad) return (err.textContent = bad);
+    if (!COD_FORM_URL) return (err.textContent = "COD orders open very soon 💗 Please pay online for now.");
+    const btn = form.querySelector("[type=submit]");
+    btn.disabled = true;
+    btn.textContent = "Placing your order…";
+    err.textContent = "";
+    d.page = location.href.slice(0, 200);
+    try {
+      const r = await fetch(COD_FORM_URL, { method: "POST", body: new URLSearchParams(d) });
+      const res = await r.json();
+      if (!res.ok) throw new Error(res.error || "not saved");
+      location.href = `thank-you.html?type=codfull&order_id=${encodeURIComponent(res.id)}`;
+    } catch (_) {
+      btn.disabled = false;
+      btn.textContent = `Place COD order · ₹${price + COD_EXTRA}`;
+      err.innerHTML = `Couldn't place the order. Please try again, or WhatsApp us on <a href="https://wa.me/916282377040">+91 62823 77040</a>.`;
+    }
+  };
+  document.body.appendChild(m);
+  form.querySelector("input").focus();
 }
 
 // Meta Pixel events (the base PageView is in index.html)
