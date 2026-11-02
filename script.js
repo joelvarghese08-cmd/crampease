@@ -117,7 +117,10 @@ function payTip(link) {
       <button class="btn btn-ghost" type="button">Close</button>
     </div>`;
   m.querySelector("button").onclick = () => m.remove();
-  m.onclick = (e) => e.target === m && m.remove();
+  // block body: an onclick that returns false (e.target !== m) would cancel every click inside the card
+  m.onclick = (e) => {
+    if (e.target === m) m.remove();
+  };
   document.body.appendChild(m);
 }
 
@@ -144,7 +147,9 @@ function codForm() {
   const form = m.querySelector("form");
   const err = m.querySelector(".cod-error");
   m.querySelector("[data-close]").onclick = () => m.remove();
-  m.onclick = (e) => e.target === m && m.remove();
+  m.onclick = (e) => {
+    if (e.target === m) m.remove();
+  };
   form.onsubmit = async (e) => {
     e.preventDefault();
     const d = Object.fromEntries(new FormData(form));
