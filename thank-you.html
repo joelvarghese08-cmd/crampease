@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Thank you — CrampEase</title>
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#ff6fa5" />
+  <link rel="icon" type="image/svg+xml" href="images/logo-mark.svg" />
+  <link rel="apple-touch-icon" href="images/logo-square.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Meta Pixel -->
+  <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1807102890492249');
+    fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1807102890492249&ev=PageView&noscript=1" /></noscript>
+  <!-- End Meta Pixel -->
+  <script>
+    // Razorpay Payment Pages redirect here after a successful payment:
+    //   thank-you.html?type=online  (₹599 paid)   or   thank-you.html?type=cod  (₹99 advance on a ₹649 order)
+    // Razorpay's own "payment complete" pixel event never reached Meta, so the Purchase is sent from here.
+    // value = the full order value, so Meta learns what a sale is worth. Sent once per payment (reloads don't repeat it).
+    (function () {
+      var q = new URLSearchParams(location.search);
+      var type = q.get("type") === "cod" ? "cod" : "online";
+      var value = type === "cod" ? 649 : 599;
+      var payId = q.get("razorpay_payment_id") || q.get("payment_id") || "";
+      var key = "purchase_sent:" + (payId || type + ":" + new Date().toDateString());
+      var sent = false;
+      try { sent = localStorage.getItem(key) === "1"; } catch (e) {}
+      if (!sent) {
+        var data = { value: value, currency: "INR", content_name: "CrampEase Warm Hug Belt",
+                     content_type: "product", num_items: 1, payment_type: type };
+        fbq("track", "Purchase", data, payId ? { eventID: payId } : {});
+        try { localStorage.setItem(key, "1"); } catch (e) {}
+      }
+      window.__orderType = type;
+    })();
+  </script>
+</head>
+<body>
+  <div class="sparkles" aria-hidden="true"></div>
+
+  <header class="nav">
+    <a href="index.html" class="logo"><img class="logo-mark" src="images/logo-mark.svg" alt="" />Cramp<span>Ease</span></a>
+    <a class="btn btn-small" href="index.html">Home</a>
+  </header>
+
+  <main class="policy thanks">
+    <h1>Thank you, <em>lovely!</em> 💗</h1>
+    <p class="muted">Your order is confirmed. A warm hug is on its way to you.</p>
+
+    <section>
+      <h2>What happens next</h2>
+      <ul>
+        <li data-type="online">You've paid <b>₹599</b> in full — nothing more to pay at delivery.</li>
+        <li data-type="cod">Your <b>₹99</b> advance is received. Please keep <b>₹550</b> ready to pay when your parcel arrives.</li>
+        <li>We dispatch within 1–2 working days. Delivery usually takes 4–7 working days, and it's free.</li>
+        <li>You'll get tracking details by SMS once it ships.</li>
+        <li>Razorpay has emailed you a payment receipt.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Need help?</h2>
+      <p>Message or call us on <a href="tel:+916282377040">+91 62823 77040</a>, or email
+         <a href="mailto:joel@crampease.in">joel@crampease.in</a>. We reply within 24 hours.</p>
+      <a class="btn" href="index.html">Back to CrampEase 🌸</a>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <a href="index.html" class="logo"><img class="logo-mark" src="images/logo-mark.svg" alt="" />Cramp<span>Ease</span></a>
+    <p>© <span class="year"></span> CrampEase · crampease.in</p>
+  </footer>
+
+  <script>
+    document.querySelectorAll("[data-type]").forEach((el) => {
+      if (el.dataset.type !== window.__orderType) el.remove();
+    });
+    document.querySelectorAll(".year").forEach((el) => (el.textContent = new Date().getFullYear()));
+  </script>
+</body>
+</html>
