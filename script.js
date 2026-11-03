@@ -50,7 +50,7 @@ const PRODUCTS = [
       "🌬️ Breathable fabric",
       "📦 Set of 5 · free size",
     ],
-    price: 299,
+    price: 399,
     image: "images/pads1.jpg",
     badge: "New · Eco-friendly",
     icon: "🌸",
