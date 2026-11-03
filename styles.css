@@ -366,6 +366,16 @@ details p { margin-top: 10px; color: var(--muted); }
 .pay-tip-card p { color: var(--muted); margin-bottom: 18px; }
 .pay-tip-card .btn { width: 100%; justify-content: center; margin-top: 8px; }
 
+/* product picker above the Online / COD cards */
+.pick { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: -6px auto 26px; }
+.pick button {
+  font: inherit; font-weight: 700; color: var(--rose); cursor: pointer;
+  padding: 10px 18px; border-radius: 999px; border: 2px solid var(--blush-2); background: var(--white);
+  transition: background .2s, color .2s, border-color .2s;
+}
+.pick button[aria-pressed="true"] { background: linear-gradient(135deg, var(--pink), var(--rose)); color: var(--white); border-color: transparent; }
+.pay-for { color: var(--muted); font-weight: 600; margin-top: 2px; }
+
 /* COD order form (reuses the pay-tip modal) */
 .cod-form { overflow-y: auto; }
 .cod-form .pay-tip-card { width: 100%; max-width: 420px; text-align: left; }

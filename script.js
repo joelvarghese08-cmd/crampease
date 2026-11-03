@@ -2,13 +2,9 @@
 //  EDIT HERE — payment links, COD rules and your products
 // ======================================================
 
-// Paste your Razorpay Payment Page links here (razorpay.com → Payment Pages).
-// ONLINE_LINK = page for the full online price, COD_LINK = page for the COD advance.
-const ONLINE_LINK = "https://rzp.io/rzp/crampease-online";
-const COD_LINK = "https://rzp.io/rzp/crampease-cod";
-
+// Each product has its own Razorpay Payment Page (razorpay.com → Payment Pages) for paying online.
+// The old ₹99 COD-advance page (https://rzp.io/rzp/crampease-cod) is no longer linked from the site.
 const COD_EXTRA = 50;   // COD costs this much more than paying online
-const COD_ADVANCE = 99; // old COD-with-advance page (COD_LINK); COD orders now use the form below
 
 // COD orders need no payment: the order form posts to this Google Apps Script web app
 // (it saves each order to the "CrampEase COD orders" Google Sheet; the order bot alerts on Telegram).
@@ -16,10 +12,15 @@ const COD_FORM_URL =
   "https://script.google.com/macros/s/AKfycbwQ7ZneGRMl_8QEkYPREiLBJeEs8tnnosgES52BEJ3w47vwuH3gNg-WRqc79yv2tVS62A/exec";
 
 // Put product photos in the /images folder and write the file name below.
-// price = your selling price, mrp = crossed-out price (optional), badge = small tag (optional)
-// features = bullet points (optional). Add more products by copying a { ... } block.
+// id = short code (also sent to the order bot), short = name on the order picker,
+// price = your selling price, mrp = crossed-out price (optional), badge = small tag (optional),
+// features = bullet points (optional), link = its Razorpay Payment Page.
+// Add more products by copying a { ... } block.
 const PRODUCTS = [
   {
+    id: "belt",
+    short: "Warm Hug Belt",
+    link: "https://rzp.io/rzp/crampease-online",
     name: "CrampEase Warm Hug Belt",
     desc: "Cordless, rechargeable heating belt with a soft plush cover. Wear it at home, college or work — and feel the warmth in seconds.",
     features: [
@@ -36,35 +37,59 @@ const PRODUCTS = [
     badge: "Bestseller",
     icon: "🔥",
   },
+  {
+    id: "pads",
+    short: "Reusable Pads",
+    link: "https://rzp.io/rzp/crampease-pads",
+    name: "CrampEase Reusable Cloth Pads · Set of 5",
+    desc: "Soft, washable cloth pads you can use again and again — comfy all day, with less waste every month.",
+    features: [
+      "🌿 Reusable — just wash, dry & use again",
+      "☁️ Ultra-soft cloth, gentle on skin",
+      "💧 Leak-proof layer with secure wings",
+      "🌬️ Breathable fabric",
+      "📦 Set of 5 · free size",
+    ],
+    price: 299,
+    image: "images/pads1.jpg",
+    badge: "New · Eco-friendly",
+    icon: "🌸",
+  },
 ];
 
 // ======================================================
 
-// fill the "Online vs COD" order section from the numbers above
-const price = PRODUCTS[0].price;
+// The order section works on one product at a time; the picker (and each card's Buy now) switches it.
+let sel = PRODUCTS[0];
 const fill = (key, value) =>
   document.querySelectorAll(`[data-fill="${key}"]`).forEach((el) => (el.textContent = value));
-fill("online", `₹${price}`);
-fill("cod", `₹${price + COD_EXTRA}`);
-fill("extra", `₹${COD_EXTRA}`);
-fill("advance", `₹${COD_ADVANCE}`);
-fill("balance", `₹${price + COD_EXTRA - COD_ADVANCE}`);
 
-function wirePay(selector, link) {
-  document.querySelectorAll(selector).forEach((a) => {
-    if (link) {
-      a.href = link;
-      a.target = "_blank";
-      a.rel = "noopener";
-    } else {
-      a.addEventListener("click", (e) => {
-        e.preventDefault();
-        toast("Payments open very soon 💗 Please check back shortly!");
-      });
-    }
+function selectProduct(id) {
+  sel = PRODUCTS.find((p) => p.id === id) || PRODUCTS[0];
+  fill("product", sel.short);
+  fill("online", `₹${sel.price}`);
+  fill("cod", `₹${sel.price + COD_EXTRA}`);
+  fill("extra", `₹${COD_EXTRA}`);
+  document.querySelectorAll("[data-pay=online]").forEach((a) => {
+    a.href = sel.link;
+    a.target = "_blank";
+    a.rel = "noopener";
+  });
+  document.querySelectorAll("#pick button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.id === sel.id));
+}
+
+const pick = document.getElementById("pick");
+if (pick) {
+  pick.innerHTML = PRODUCTS.map(
+    (p) => `<button type="button" data-id="${p.id}" aria-pressed="false">${p.icon} ${p.short} · ₹${p.price}</button>`
+  ).join("");
+  pick.addEventListener("click", (e) => {
+    const b = e.target.closest("button");
+    if (b) selectProduct(b.dataset.id);
   });
 }
-wirePay("[data-pay=online]", ONLINE_LINK);
+selectProduct((location.hash.match(/^#order-(\w+)/) || [])[1]);
+
 document.querySelectorAll("[data-pay=cod]").forEach((a) =>
   a.addEventListener("click", (e) => {
     e.preventDefault();
@@ -93,7 +118,7 @@ if (inApp) {
   // only online payment needs a real browser; the COD form works fine in the in-app browser
   document.querySelectorAll("[data-pay=online]").forEach((a) =>
     a.addEventListener("click", (e) => {
-      const link = ONLINE_LINK;
+      const link = sel.link;
       if (!link) return;
       e.preventDefault();
       if (isAndroid) {
@@ -126,12 +151,14 @@ function payTip(link) {
 
 // Cash on delivery order form: no payment, we call to confirm. On success -> thank-you page (fires Purchase).
 function codForm() {
+  const p = sel;
+  const total = p.price + COD_EXTRA;
   const m = document.createElement("div");
   m.className = "pay-tip cod-form";
   m.innerHTML = `
     <form class="pay-tip-card" novalidate>
       <h3>Cash on delivery 💗</h3>
-      <p>Nothing to pay now — pay <b>₹${price + COD_EXTRA}</b> in cash when it arrives. We'll call to confirm.</p>
+      <p><b>${p.short}</b> — nothing to pay now, pay <b>₹${total}</b> in cash when it arrives. We'll call to confirm.</p>
       <label>Full name<input name="name" autocomplete="name" required maxlength="80" /></label>
       <label>Phone (10 digits)<input name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" required maxlength="14" /></label>
       <label>Full address (house, street, landmark)<textarea name="address" rows="2" autocomplete="street-address" required maxlength="300"></textarea></label>
@@ -141,7 +168,7 @@ function codForm() {
       </div>
       <input name="website" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true" />
       <p class="cod-error" role="alert"></p>
-      <button class="btn" type="submit">Place COD order · ₹${price + COD_EXTRA}</button>
+      <button class="btn" type="submit">Place COD order · ₹${total}</button>
       <button class="btn btn-ghost" type="button" data-close>Close</button>
     </form>`;
   const form = m.querySelector("form");
@@ -167,14 +194,15 @@ function codForm() {
     btn.textContent = "Placing your order…";
     err.textContent = "";
     d.page = location.href.slice(0, 200);
+    d.note = p.id; // the sheet's "note" column carries the product code for the order bot
     try {
       const r = await fetch(COD_FORM_URL, { method: "POST", body: new URLSearchParams(d) });
       const res = await r.json();
       if (!res.ok) throw new Error(res.error || "not saved");
-      location.href = `thank-you.html?type=codfull&order_id=${encodeURIComponent(res.id)}`;
+      location.href = `thank-you.html?type=codfull&product=${p.id}&order_id=${encodeURIComponent(res.id)}`;
     } catch (_) {
       btn.disabled = false;
-      btn.textContent = `Place COD order · ₹${price + COD_EXTRA}`;
+      btn.textContent = `Place COD order · ₹${total}`;
       err.innerHTML = `Couldn't place the order. Please try again, or WhatsApp us on <a href="https://wa.me/916282377040">+91 62823 77040</a>.`;
     }
   };
@@ -184,18 +212,19 @@ function codForm() {
 
 // Meta Pixel events (the base PageView is in index.html)
 const track = (event, data) => window.fbq && fbq("track", event, data);
-const productData = (value) => ({
-  content_name: PRODUCTS[0].name,
+const productData = (p, value) => ({
+  content_name: p.name,
+  content_ids: [p.id],
   content_type: "product",
   value,
   currency: "INR",
 });
-track("ViewContent", productData(price));
+track("ViewContent", productData(PRODUCTS[0], PRODUCTS[0].price));
 document.querySelectorAll("[data-pay=online]").forEach((a) =>
-  a.addEventListener("click", () => track("InitiateCheckout", productData(price)))
+  a.addEventListener("click", () => track("InitiateCheckout", productData(sel, sel.price)))
 );
 document.querySelectorAll("[data-pay=cod]").forEach((a) =>
-  a.addEventListener("click", () => track("InitiateCheckout", productData(price + COD_EXTRA)))
+  a.addEventListener("click", () => track("InitiateCheckout", productData(sel, sel.price + COD_EXTRA)))
 );
 
 function toast(msg) {
@@ -251,9 +280,10 @@ PRODUCTS.forEach((p, i) => {
       <strong>₹${p.price}</strong>
       ${p.mrp ? `<s>₹${p.mrp}</s><small>${off}% off</small>` : ""}
     </div>
-    <a class="btn" href="#order">Buy now 💗</a>
+    <a class="btn" href="#order" data-pick="${p.id}">Buy now 💗</a>
     </div>`;
   useFallback(card.querySelector("img"), p.icon || "🌸", p.name);
+  card.querySelector("[data-pick]").addEventListener("click", () => selectProduct(p.id));
   grid.appendChild(card);
 });
 

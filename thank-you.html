@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=20261102" />
+  <link rel="stylesheet" href="styles.css?v=20261103" />
   <!-- Meta Pixel -->
   <script>
     !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -30,21 +30,29 @@
     // Razorpay's own "payment complete" pixel event never reached Meta, so the Purchase is sent from here.
     // value = the full order value, so Meta learns what a sale is worth. Sent once per payment (reloads don't repeat it).
     (function () {
-      //   thank-you.html?type=codfull&order_id=...  (COD order form, nothing paid yet, ₹649 on delivery)
+      //   thank-you.html?type=codfull&product=...&order_id=...  (COD order form, nothing paid yet)
+      //   &product=pads marks the Reusable Pads (₹299 online / ₹349 COD); no product = the belt
+      var PRODUCTS = {
+        belt: { name: "CrampEase Warm Hug Belt", price: 599 },
+        pads: { name: "CrampEase Reusable Cloth Pads · Set of 5", price: 299 },
+      };
       var q = new URLSearchParams(location.search);
       var type = ["cod", "codfull"].indexOf(q.get("type")) >= 0 ? q.get("type") : "online";
-      var value = type === "online" ? 599 : 649;
+      var pid = PRODUCTS[q.get("product")] ? q.get("product") : "belt";
+      var prod = PRODUCTS[pid];
+      var value = type === "online" ? prod.price : prod.price + 50;
       var payId = q.get("razorpay_payment_id") || q.get("payment_id") || q.get("order_id") || "";
       var key = "purchase_sent:" + (payId || type + ":" + new Date().toDateString());
       var sent = false;
       try { sent = localStorage.getItem(key) === "1"; } catch (e) {}
       if (!sent) {
-        var data = { value: value, currency: "INR", content_name: "CrampEase Warm Hug Belt",
+        var data = { value: value, currency: "INR", content_name: prod.name, content_ids: [pid],
                      content_type: "product", num_items: 1, payment_type: type };
         fbq("track", "Purchase", data, payId ? { eventID: payId } : {});
         try { localStorage.setItem(key, "1"); } catch (e) {}
       }
       window.__orderType = type;
+      window.__orderValue = value;
     })();
   </script>
 </head>
@@ -63,10 +71,10 @@
     <section>
       <h2>What happens next</h2>
       <ul>
-        <li data-type="online">You've paid <b>₹599</b> in full — nothing more to pay at delivery.</li>
+        <li data-type="online">You've paid <b data-value></b> in full — nothing more to pay at delivery.</li>
         <li data-type="cod">Your <b>₹99</b> advance is received. Please keep <b>₹550</b> ready to pay when your parcel arrives.</li>
         <li data-type="codfull">Your cash on delivery order is placed. <b>We'll call or WhatsApp you shortly to confirm</b> — please keep your phone handy.</li>
-        <li data-type="codfull">Keep <b>₹649</b> ready to pay in cash when your parcel arrives.</li>
+        <li data-type="codfull">Keep <b data-value></b> ready to pay in cash when your parcel arrives.</li>
         <li>We dispatch within 1–2 working days. Delivery usually takes 4–7 working days, and it's free.</li>
         <li>You'll get tracking details by SMS once it ships.</li>
         <li data-type="online">Razorpay has emailed you a payment receipt.</li>
@@ -90,6 +98,7 @@
     document.querySelectorAll("[data-type]").forEach((el) => {
       if (el.dataset.type !== window.__orderType) el.remove();
     });
+    document.querySelectorAll("[data-value]").forEach((el) => (el.textContent = "₹" + window.__orderValue));
     document.querySelectorAll(".year").forEach((el) => (el.textContent = new Date().getFullYear()));
   </script>
 </body>
