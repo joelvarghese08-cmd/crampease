@@ -153,7 +153,10 @@ if (pick) {
     if (b) selectProduct(b.dataset.id);
   });
 }
-selectProduct((location.hash.match(/^#order-(\w+)/) || [])[1]);
+// ad links like crampease.in/#order-pads open the order section with that product picked
+const hashPick = (location.hash.match(/^#order-(\w+)/) || [])[1];
+selectProduct(hashPick);
+if (hashPick) addEventListener("load", () => document.getElementById("order").scrollIntoView());
 
 document.querySelectorAll("[data-pay=cod]").forEach((a) =>
   a.addEventListener("click", (e) => {
