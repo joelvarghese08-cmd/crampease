@@ -55,6 +55,24 @@ const PRODUCTS = [
     badge: "New · Eco-friendly",
     icon: "🌸",
   },
+  {
+    id: "heatbag",
+    short: "Electric Heat Bag",
+    link: "https://rzp.io/rzp/crampease-heatbag",
+    name: "CrampEase Electric Heat Bag · 1000 ml",
+    desc: "A soft velvet heat bag you warm up by plugging in — no kettle, no boiling water. Unplug before use; never use while charging.",
+    features: [
+      "🔌 Electric — warms up in minutes, no boiling water",
+      "🧸 Soft velvet cover with plush edges",
+      "♨️ Gel-filled for lasting warmth",
+      "📦 Big 1000 ml size",
+      "🎨 Colour & design may vary",
+    ],
+    price: 499,
+    image: "images/heatbag1.jpg",
+    badge: "New",
+    icon: "♨️",
+  },
 ];
 
 // ======================================================

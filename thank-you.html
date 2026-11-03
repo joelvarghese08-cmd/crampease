@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=20261103b" />
+  <link rel="stylesheet" href="styles.css?v=20261103c" />
   <!-- Meta Pixel -->
   <script>
     !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -31,10 +31,11 @@
     // value = the full order value, so Meta learns what a sale is worth. Sent once per payment (reloads don't repeat it).
     (function () {
       //   thank-you.html?type=codfull&product=...&order_id=...  (COD order form, nothing paid yet)
-      //   &product=pads marks the Reusable Pads (₹399 online / ₹449 COD); no product = the belt
+      //   &product=pads / heatbag pick the product (COD = online price + ₹50); no product = the belt
       var PRODUCTS = {
         belt: { name: "CrampEase Warm Hug Belt", price: 599 },
         pads: { name: "CrampEase Reusable Cloth Pads · Set of 5", price: 399 },
+        heatbag: { name: "CrampEase Electric Heat Bag · 1000 ml", price: 499 },
       };
       var q = new URLSearchParams(location.search);
       var type = ["cod", "codfull"].indexOf(q.get("type")) >= 0 ? q.get("type") : "online";
