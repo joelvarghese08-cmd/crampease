@@ -376,6 +376,17 @@ details p { margin-top: 10px; color: var(--muted); }
 .pick button[aria-pressed="true"] { background: linear-gradient(135deg, var(--pink), var(--rose)); color: var(--white); border-color: transparent; }
 .pay-for { color: var(--muted); font-weight: 600; margin-top: 2px; }
 
+/* colour / design choice (on product cards and under the order picker) */
+.swatches { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 4px 8px 14px; }
+.swatches button {
+  width: 30px; height: 30px; border-radius: 50%; cursor: pointer; padding: 0;
+  background: var(--sw); border: 3px solid var(--white); box-shadow: 0 0 0 2px var(--blush-2);
+  transition: box-shadow .2s, transform .2s;
+}
+.swatches button[aria-checked="true"] { box-shadow: 0 0 0 3px var(--rose); transform: scale(1.08); }
+.swatch-name { font-weight: 700; color: var(--plum); font-size: .92rem; }
+#pick-color .swatches { justify-content: center; margin: -12px auto 24px; }
+
 /* COD order form (reuses the pay-tip modal) */
 .cod-form { overflow-y: auto; }
 .cod-form .pay-tip-card { width: 100%; max-width: 420px; text-align: left; }

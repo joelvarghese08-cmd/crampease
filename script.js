@@ -51,7 +51,15 @@ const PRODUCTS = [
       "📦 Set of 5 · free size",
     ],
     price: 399,
-    image: "images/pads1.jpg",
+    image: "images/pads-red.jpg",
+    // colours = optional choices; each has a swatch colour and its own photo. The chosen colour
+    // goes with COD orders to the bot; the Razorpay page asks for it again for online orders.
+    colors: [
+      { id: "red", label: "Red", swatch: "#d62828", image: "images/pads-red.jpg" },
+      { id: "navy", label: "Navy Blue", swatch: "#1f3a6b", image: "images/pads-navy.jpg" },
+      { id: "sky", label: "Sky Blue", swatch: "#a7d8f0", image: "images/pads-sky.jpg" },
+      { id: "grey", label: "Grey", swatch: "#6b6e74", image: "images/pads-grey.jpg" },
+    ],
     badge: "New · Eco-friendly",
     icon: "🌸",
   },
@@ -66,10 +74,17 @@ const PRODUCTS = [
       "🧸 Soft velvet cover with plush edges",
       "♨️ Gel-filled for lasting warmth",
       "📦 Big 1000 ml size",
-      "🎨 Colour & design may vary",
+      "🎨 Pick your design below",
     ],
     price: 499,
-    image: "images/heatbag1.jpg",
+    image: "images/heatbag-grey.jpg",
+    // each design is its own Meesho listing: grey 76k7cw, brown dots 76k7cv, hearts 76k7cy, red 76k7cz
+    colors: [
+      { id: "grey", label: "Grey Dots", swatch: "#9a9ca0", image: "images/heatbag-grey.jpg" },
+      { id: "browndots", label: "Brown Dots", swatch: "#7a4a24", image: "images/heatbag-browndots.jpg" },
+      { id: "hearts", label: "Brown Hearts", swatch: "linear-gradient(135deg,#7a4a24 50%,#ffffff 50%)", image: "images/heatbag-hearts.jpg" },
+      { id: "red", label: "Red Dots", swatch: "#d62828", image: "images/heatbag-red.jpg" },
+    ],
     badge: "New",
     icon: "♨️",
   },
@@ -79,12 +94,44 @@ const PRODUCTS = [
 
 // The order section works on one product at a time; the picker (and each card's Buy now) switches it.
 let sel = PRODUCTS[0];
+const chosen = {}; // product id -> chosen colour id (products with colours start on the first one)
+PRODUCTS.forEach((p) => p.colors && (chosen[p.id] = p.colors[0].id));
+const colorOf = (p) => p.colors && p.colors.find((c) => c.id === chosen[p.id]);
 const fill = (key, value) =>
   document.querySelectorAll(`[data-fill="${key}"]`).forEach((el) => (el.textContent = value));
 
+const swatchesHtml = (p) =>
+  p.colors
+    ? `<div class="swatches" role="radiogroup" aria-label="Colour" data-for="${p.id}">${p.colors
+        .map(
+          (c) => `<button type="button" role="radio" data-color="${c.id}" aria-label="${c.label}" title="${c.label}"
+                   style="--sw:${c.swatch}" aria-checked="${c.id === chosen[p.id]}"></button>`
+        )
+        .join("")}<span class="swatch-name">${colorOf(p).label}</span></div>`
+    : "";
+
+// one colour choice per product, kept in sync on its card and in the order section
+function chooseColor(pid, cid) {
+  const p = PRODUCTS.find((x) => x.id === pid);
+  chosen[pid] = cid;
+  document.querySelectorAll(`.swatches[data-for="${pid}"]`).forEach((g) => {
+    g.querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", b.dataset.color === cid));
+    g.querySelector(".swatch-name").textContent = colorOf(p).label;
+  });
+  const img = document.querySelector(`.card[data-id="${pid}"] .card-img img`);
+  if (img) img.src = colorOf(p).image;
+  if (sel.id === pid) fill("product", `${p.short} · ${colorOf(p).label}`);
+}
+document.addEventListener("click", (e) => {
+  const b = e.target.closest(".swatches button");
+  if (b) chooseColor(b.closest(".swatches").dataset.for, b.dataset.color);
+});
+
 function selectProduct(id) {
   sel = PRODUCTS.find((p) => p.id === id) || PRODUCTS[0];
-  fill("product", sel.short);
+  fill("product", sel.colors ? `${sel.short} · ${colorOf(sel).label}` : sel.short);
+  const pc = document.getElementById("pick-color");
+  if (pc) pc.innerHTML = swatchesHtml(sel);
   fill("online", `₹${sel.price}`);
   fill("cod", `₹${sel.price + COD_EXTRA}`);
   fill("extra", `₹${COD_EXTRA}`);
@@ -171,12 +218,18 @@ function payTip(link) {
 function codForm() {
   const p = sel;
   const total = p.price + COD_EXTRA;
+  const colorField = p.colors
+    ? `<label>Colour<select name="color">${p.colors
+        .map((c) => `<option value="${c.id}"${c.id === chosen[p.id] ? " selected" : ""}>${c.label}</option>`)
+        .join("")}</select></label>`
+    : "";
   const m = document.createElement("div");
   m.className = "pay-tip cod-form";
   m.innerHTML = `
     <form class="pay-tip-card" novalidate>
       <h3>Cash on delivery 💗</h3>
       <p><b>${p.short}</b> — nothing to pay now, pay <b>₹${total}</b> in cash when it arrives. We'll call to confirm.</p>
+      ${colorField}
       <label>Full name<input name="name" autocomplete="name" required maxlength="80" /></label>
       <label>Phone (10 digits)<input name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" required maxlength="14" /></label>
       <label>Full address (house, street, landmark)<textarea name="address" rows="2" autocomplete="street-address" required maxlength="300"></textarea></label>
@@ -212,7 +265,9 @@ function codForm() {
     btn.textContent = "Placing your order…";
     err.textContent = "";
     d.page = location.href.slice(0, 200);
-    d.note = p.id; // the sheet's "note" column carries the product code for the order bot
+    // the sheet's "note" column carries the product code (and colour, "pads:navy") for the order bot
+    d.note = d.color ? `${p.id}:${d.color}` : p.id;
+    delete d.color;
     try {
       const r = await fetch(COD_FORM_URL, { method: "POST", body: new URLSearchParams(d) });
       const res = await r.json();
@@ -286,6 +341,7 @@ PRODUCTS.forEach((p, i) => {
   const off = p.mrp ? Math.round((1 - p.price / p.mrp) * 100) : 0;
   const card = document.createElement("article");
   card.className = "card reveal";
+  card.dataset.id = p.id;
   card.style.transitionDelay = `${i * 0.08}s`;
   card.innerHTML = `
     ${p.badge ? `<span class="badge">${p.badge}</span>` : ""}
@@ -294,6 +350,7 @@ PRODUCTS.forEach((p, i) => {
     <h3>${p.name}</h3>
     <p>${p.desc}</p>
     ${p.features ? `<ul class="features">${p.features.map((f) => `<li>${f}</li>`).join("")}</ul>` : ""}
+    ${swatchesHtml(p)}
     <div class="price">
       <strong>₹${p.price}</strong>
       ${p.mrp ? `<s>₹${p.mrp}</s><small>${off}% off</small>` : ""}
