@@ -205,7 +205,8 @@ function payTip(link) {
     <div class="pay-tip-card">
       <h3>One quick step 💗</h3>
       <p>UPI apps can't open inside Instagram/Facebook. Tap <b>•••</b> at the top right,
-         choose <b>Open in browser</b>, then tap Pay again.</p>
+         choose <b>Open in browser</b>, then tap Pay again. Or close this and choose
+         <b>Cash on delivery</b>: nothing to pay now.</p>
       <a class="btn" href="${link}" target="_blank" rel="noopener">Continue here anyway</a>
       <button class="btn btn-ghost" type="button">Close</button>
     </div>`;

@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=20261103e" />
+  <link rel="stylesheet" href="styles.css?v=20261105a" />
   <!-- Meta Pixel -->
   <script>
     !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -107,6 +107,18 @@
       <div id="pick-color"></div>
       <div class="pay-grid">
         <div class="pay-card best reveal">
+          <span class="pay-tag">Nothing to pay now 💗</span>
+          <h3>Cash on delivery</h3>
+          <p class="pay-for" data-fill="product"></p>
+          <p class="pay-price" data-fill="cod"></p>
+          <ul>
+            <li><b>No advance, no UPI needed</b></li>
+            <li>Pay <b data-fill="cod"></b> in cash when it arrives</li>
+            <li>We call you to confirm · Free delivery</li>
+          </ul>
+          <a class="btn" data-pay="cod" href="#">Order now, pay on delivery</a>
+        </div>
+        <div class="pay-card reveal">
           <span class="pay-tag">Save <span data-fill="extra"></span> ✨</span>
           <h3>Pay online</h3>
           <p class="pay-for" data-fill="product"></p>
@@ -116,18 +128,8 @@
             <li>Free delivery</li>
             <li>Fastest dispatch</li>
           </ul>
-          <a class="btn" data-pay="online" href="#">Pay <span data-fill="online"></span> &amp; order</a>
-        </div>
-        <div class="pay-card reveal">
-          <h3>Cash on delivery</h3>
-          <p class="pay-for" data-fill="product"></p>
-          <p class="pay-price" data-fill="cod"></p>
-          <ul>
-            <li><b>Nothing to pay now</b></li>
-            <li>Pay <b data-fill="cod"></b> in cash when it arrives</li>
-            <li>We call you to confirm · Free delivery</li>
-          </ul>
-          <a class="btn btn-ghost" data-pay="cod" href="#">Order now, pay on delivery</a>
+          <a class="btn btn-ghost" data-pay="online" href="#">Pay <span data-fill="online"></span> &amp; order</a>
+          <p class="pay-note">UPI app not opening? Try a card, net banking or wallet on the payment page, or choose cash on delivery instead.</p>
         </div>
       </div>
       <p class="secure reveal">🔒 Online payments are processed securely by Razorpay. For cash on delivery, just fill a short form — no payment needed.</p>
@@ -217,6 +219,6 @@
     <p>Made with love for every girl. © <span class="year"></span> CrampEase · crampease.in</p>
   </footer>
 
-  <script src="script.js?v=20261103e"></script>
+  <script src="script.js?v=20261105a"></script>
 </body>
 </html>

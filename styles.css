@@ -335,6 +335,7 @@ details p { margin-top: 10px; color: var(--muted); }
 .pay-card ul { list-style: none; display: grid; gap: 8px; color: var(--muted); margin-bottom: 24px; }
 .pay-card li::before { content: "♡ "; color: var(--pink); }
 .pay-card .btn { width: 100%; justify-content: center; }
+.pay-note { color: var(--muted); font-size: .85rem; margin-top: 12px; text-align: center; }
 .secure { text-align: center; color: var(--muted); font-size: .9rem; margin-top: 26px; }
 @media (max-width: 760px) { .pay-grid { grid-template-columns: 1fr; gap: 34px; } }
 
