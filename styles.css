@@ -655,8 +655,8 @@ body[data-product] .why-icon { background: #f6f0ff; }
 .rating-link[hidden], .review-summary[hidden], .review-form[hidden], .review-thanks[hidden], .review-open[hidden], .review-empty[hidden] { display: none; }
 .review-summary { text-align: center; color: #4a2340; font-weight: 800; font-size: 1.1rem; margin-bottom: 16px; }
 .review-empty { text-align: center; color: #7a5a70; margin-bottom: 16px; }
-.review-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 20px; }
-.review-card { background: #fff; border: 1px solid #f8dbe7; border-radius: 16px; padding: 18px; }
+.review-list { margin-bottom: 20px; overflow: hidden; }
+.review-card { flex: 0 0 min(280px, 78vw); background: #fff; border: 1px solid #f8dbe7; border-radius: 16px; padding: 18px; }
 .review-card-stars { color: #d6336c; letter-spacing: 1px; margin-bottom: 6px; }
 .review-card p { color: #4a2340; margin-bottom: 10px; }
 .review-card img { width: 100%; border-radius: 12px; margin-bottom: 10px; aspect-ratio: 4 / 3; object-fit: cover; }
@@ -687,4 +687,13 @@ body[data-product] .why-icon { background: #f6f0ff; }
 .review-error { color: #c2255c; font-weight: 700; font-size: .9rem; min-height: 1.2em; margin-bottom: 4px; }
 .review-note { color: #7a5a70; font-size: .82rem; margin-top: 10px; }
 .review-thanks { background: #f6f0ff; border: 1px solid #dccbff; border-radius: 14px; padding: 16px; font-weight: 700; color: #55307a; }
+.review-track { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
+.review-list.is-moving .review-track {
+  flex-wrap: nowrap; justify-content: flex-start; width: max-content;
+  animation: review-scroll var(--review-speed, 30s) linear infinite;
+}
+/* the gap after the last card is part of the loop, so it moves by half plus half a gap */
+@keyframes review-scroll { to { transform: translateX(calc(-50% - 8px)); } }
+.review-list.is-moving:hover .review-track, .review-list.is-moving:focus-within .review-track { animation-play-state: paused; }
+#home-reviews[hidden] { display: none; }
 

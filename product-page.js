@@ -50,59 +50,24 @@
   }).observe(document.getElementById("buy"));
 })();
 
-// ------------------------------------------------------
-//  Customer reviews. Add ONLY real reviews from real buyers who agreed to be shown.
-//  Example: { name: "Priya", city: "Kochi", rating: 5, text: "Their words", photo: "images/reviews/priya.jpg", date: "12 Nov 2026" }
-// ------------------------------------------------------
-var REVIEWS = {
-  belt: [],
-  pads: [],
-  heatbag: [],
-};
+// Reviews live in script.js (REVIEWS). The WhatsApp number for sending one:
 var REVIEW_WHATSAPP = "916282377040";
 
 (function () {
   var list = REVIEWS[sel.id] || [];
   var box = document.getElementById("review-list");
 
-  function stars(n) {
-    var full = Math.round(n);
-    return "★★★★★".slice(0, full) + "☆☆☆☆☆".slice(0, 5 - full);
-  }
-
   if (list.length) {
     var avg = list.reduce(function (s, r) { return s + r.rating; }, 0) / list.length;
     var label = avg.toFixed(1) + " (" + list.length + (list.length === 1 ? " review)" : " reviews)");
     var summary = document.getElementById("review-summary");
-    summary.textContent = stars(avg) + "  " + label;
+    summary.textContent = reviewStars(avg) + "  " + label;
     summary.hidden = false;
     var link = document.getElementById("rating-link");
-    link.textContent = stars(avg) + " " + label;
+    link.textContent = reviewStars(avg) + " " + label;
     link.hidden = false;
     document.getElementById("review-empty").hidden = true;
-    list.forEach(function (r) {
-      var card = document.createElement("article");
-      card.className = "review-card";
-      var st = document.createElement("div");
-      st.className = "review-card-stars";
-      st.textContent = stars(r.rating);
-      st.setAttribute("aria-label", r.rating + " out of 5");
-      var body = document.createElement("p");
-      body.textContent = r.text;
-      var who = document.createElement("small");
-      who.textContent = r.name + ", " + r.city + (r.date ? " · " + r.date : "");
-      card.appendChild(st);
-      card.appendChild(body);
-      if (r.photo) {
-        var img = document.createElement("img");
-        img.src = r.photo;
-        img.alt = "Photo from " + r.name;
-        img.loading = "lazy";
-        card.appendChild(img);
-      }
-      card.appendChild(who);
-      box.appendChild(card);
-    });
+    renderReviewStrip(box, list);
   }
 
   var form = document.getElementById("review-form");

@@ -93,6 +93,14 @@ const PRODUCTS = [
   },
 ];
 
+// Customer reviews. Add ONLY real reviews from real buyers who agreed to be shown.
+// Example: { name: "Priya", city: "Kochi", rating: 5, text: "Their words", photo: "images/reviews/priya.jpg", date: "12 Nov 2026" }
+const REVIEWS = {
+  belt: [],
+  pads: [],
+  heatbag: [],
+};
+
 // ======================================================
 
 // The order section works on one product at a time; the picker (and each card's Buy now) switches it.
@@ -435,3 +443,64 @@ document.addEventListener("click", (e) => {
 });
 
 document.querySelectorAll(".year").forEach((el) => (el.textContent = new Date().getFullYear()));
+
+// Reviews strip: scrolls sideways when there are reviews; stays still for a single review.
+const reviewStars = (n) => "★★★★★".slice(0, Math.round(n)) + "☆☆☆☆☆".slice(0, 5 - Math.round(n));
+
+function reviewCard(r, duplicate) {
+  const card = document.createElement("article");
+  card.className = "review-card";
+  if (duplicate) card.setAttribute("aria-hidden", "true");
+  const stars = document.createElement("div");
+  stars.className = "review-card-stars";
+  stars.textContent = reviewStars(r.rating);
+  stars.setAttribute("aria-label", `${r.rating} out of 5`);
+  card.appendChild(stars);
+  const body = document.createElement("p");
+  body.textContent = r.text;
+  card.appendChild(body);
+  if (r.photo) {
+    const img = document.createElement("img");
+    img.src = r.photo;
+    img.alt = duplicate ? "" : `Photo from ${r.name}`;
+    img.loading = "lazy";
+    card.appendChild(img);
+  }
+  const who = document.createElement("small");
+  who.textContent = `${r.name}, ${r.city}${r.product ? " · " + r.product : ""}${r.date ? " · " + r.date : ""}`;
+  card.appendChild(who);
+  return card;
+}
+
+function renderReviewStrip(box, list) {
+  box.innerHTML = "";
+  box.classList.remove("is-moving");
+  if (!list.length) return;
+  const track = document.createElement("div");
+  track.className = "review-track";
+  list.forEach((r) => track.appendChild(reviewCard(r)));
+  if (list.length > 1 && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    // repeat the cards so the loop has no gap, then slide by exactly half of the track
+    const copies = Math.max(1, Math.ceil(6 / list.length) - 1);
+    for (let c = 0; c < copies; c++) list.forEach((r) => track.appendChild(reviewCard(r, true)));
+    const half = track.cloneNode(true);
+    [...half.children].forEach((el) => {
+      el.setAttribute("aria-hidden", "true");
+      track.appendChild(el);
+    });
+    track.style.setProperty("--review-speed", `${Math.max(24, track.children.length * 5)}s`);
+    box.classList.add("is-moving");
+  }
+  box.appendChild(track);
+}
+
+// home page: every product's reviews together
+const homeReviews = document.getElementById("home-reviews");
+if (homeReviews) {
+  const all = PRODUCTS.flatMap((p) => (REVIEWS[p.id] || []).map((r) => ({ ...r, product: p.short })));
+  if (all.length) {
+    homeReviews.hidden = false;
+    renderReviewStrip(document.getElementById("home-review-list"), all);
+  }
+}
+
