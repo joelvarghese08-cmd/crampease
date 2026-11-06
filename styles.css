@@ -598,9 +598,6 @@ body[data-product] .pay-note { margin-top: 0; color: #7a5a70; }
 .promise-box a { text-decoration: underline; }
 .promise-box.blue { background: #f6f0ff; border: 1px solid #dccbff; color: #55307a; }
 .promise-box.green { background: #fff0f5; border: 1px solid #fbd5e3; color: #9d174d; }
-.delivery-box { margin-top: 10px; padding: 10px 14px; border-radius: 12px; background: #fff3ec; border: 1px solid #ffd8c2; color: #8a4b2a; font-size: .88rem; }
-.delivery-box span, .delivery-box b { display: block; }
-.delivery-box b { color: #4a2340; font-size: 1.02rem; font-weight: 800; }
 
 body[data-product] .closeup, body[data-product] .why-card, body[data-product] .step, body[data-product] .info-card {
   box-shadow: none; border: 1px solid #f8dbe7; border-radius: 16px;
