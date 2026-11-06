@@ -527,11 +527,6 @@ main, .nav, .footer { position: relative; z-index: 1; }
 .safety { padding-left: 20px; display: grid; gap: 8px; }
 .safety-note { color: var(--muted); font-size: .85rem; margin-top: 14px; }
 
-.wa-chat {
-  position: fixed; right: 16px; bottom: 16px; z-index: 30;
-  padding: 11px 16px; border-radius: 999px; font-weight: 700; font-size: .92rem; color: var(--white);
-  background: #128c4b; box-shadow: 0 12px 26px -10px rgba(0,0,0,.45);
-}
 .card-more { display: block; margin: -6px 8px 12px; color: var(--rose); font-weight: 700; font-size: .92rem; }
 
 @media (max-width: 900px) {
@@ -542,8 +537,6 @@ main, .nav, .footer { position: relative; z-index: 1; }
 @media (max-width: 680px) {
   .compare, .info-grid { grid-template-columns: minmax(0, 1fr); }
   .buy-box { padding: 20px; }
-  .wa-chat { padding: 11px 13px; }
-  .wa-chat span { display: none; }
 }
 
 /* ---------- site-wide shop look (body.shop) ---------- */
@@ -629,7 +622,6 @@ body.shop .cta { background: #c2255c; border-radius: 16px; }
 body.shop .cta em { color: inherit; }
 
 .buy-bar { display: none; }
-body.shop .wa-chat { background: #16a34a; }
 
 @media (max-width: 900px) {
   body.shop { padding-bottom: 70px; }
@@ -643,7 +635,7 @@ body.shop .wa-chat { background: #16a34a; }
   .buy-bar strong { display: block; font-size: 1.25rem; font-weight: 800; line-height: 1.1; }
   .buy-bar small { color: #7b4397; font-weight: 700; font-size: .75rem; }
   .buy-bar-btn { flex: 1; padding: 12px; border-radius: 12px; text-align: center; font-weight: 800; color: #fff; background: #d6336c; }
-  body.shop .wa-chat { bottom: 76px; }
+  body.shop[data-product] .wa-chat { bottom: 84px; }
 }
 body.shop .closeup, body.shop .why-card, body.shop .step, body.shop .info-card:not(:has(.safety)), body.shop details, body.shop .gallery-track { background: #fff; }
 body.shop .why-icon { background: #f6f0ff; }
@@ -762,5 +754,22 @@ body.shop .footer { color: #7a5a70; }
   }
   .belt-look-row::-webkit-scrollbar { display: none; }
   .belt-look-row a { flex: 0 0 88%; scroll-snap-align: center; }
+}
+
+/* WhatsApp chat button */
+.wa-chat {
+  position: fixed; right: 14px; bottom: 14px; z-index: 30;
+  display: flex; align-items: center; gap: 10px; min-height: 56px; padding: 8px 18px 8px 14px;
+  border-radius: 999px; color: #fff; background: #25d366;
+  box-shadow: 0 10px 24px rgba(37, 211, 102, .5);
+  animation: wa-ring 2.2s ease-out infinite;
+}
+.wa-chat-text { display: grid; line-height: 1.15; }
+.wa-chat-text b { font-size: 16px; font-weight: 800; }
+.wa-chat-text small { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; }
+.wa-chat-text i { width: 7px; height: 7px; border-radius: 50%; background: #fff; }
+@keyframes wa-ring {
+  0% { box-shadow: 0 10px 24px rgba(37, 211, 102, .5), 0 0 0 0 rgba(37, 211, 102, .55); }
+  70%, 100% { box-shadow: 0 10px 24px rgba(37, 211, 102, .5), 0 0 0 16px rgba(37, 211, 102, 0); }
 }
 
