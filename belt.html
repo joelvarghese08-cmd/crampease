@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&family=Quicksand:wght@400;500;600;700&family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=20261106g" />
+  <link rel="stylesheet" href="styles.css?v=20261106h" />
   <!-- Meta Pixel -->
   <script>
     !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -65,6 +65,7 @@
         <p class="pill">🔥 Heat &amp; gentle massage</p>
         <h1>CrampEase <em>Warm Hug Belt</em></h1>
         <p class="buy-lead">A cordless heating belt you can wear and forget about. Warmth for your hard days, wherever they take you.</p>
+        <a class="rating-link" id="rating-link" href="#reviews" hidden></a>
         <div class="buy-price">
           <strong data-fill="online"></strong>
           <s>₹1,499</s>
@@ -229,6 +230,38 @@
       </div>
     </section>
 
+    <!-- REVIEWS -->
+    <section class="section" id="reviews">
+      <div class="section-head reveal">
+        <p class="pill">⭐ Customer reviews</p>
+        <h2>What customers <em>say</em></h2>
+      </div>
+      <div class="review-summary" id="review-summary" hidden></div>
+      <p class="review-empty" id="review-empty">No reviews yet. Bought this from us? Be the first to share your experience.</p>
+      <div class="review-list" id="review-list"></div>
+      <div class="review-write">
+        <button class="review-open" id="review-open" type="button">✍️ Write a review</button>
+        <form class="review-form" id="review-form" hidden novalidate>
+          <fieldset class="review-stars">
+            <legend>Your rating</legend>
+            <label><input type="radio" name="rating" value="1" /><span>★</span></label>
+            <label><input type="radio" name="rating" value="2" /><span>★</span></label>
+            <label><input type="radio" name="rating" value="3" /><span>★</span></label>
+            <label><input type="radio" name="rating" value="4" /><span>★</span></label>
+            <label><input type="radio" name="rating" value="5" /><span>★</span></label>
+          </fieldset>
+          <label>Your first name<input name="name" autocomplete="given-name" maxlength="40" required /></label>
+          <label>City<input name="city" autocomplete="address-level2" maxlength="50" required /></label>
+          <label>Your review<textarea name="text" rows="4" maxlength="600" required></textarea></label>
+          <label class="review-consent"><input type="checkbox" name="consent" required /><span>I bought this from CrampEase, and you can show my review, first name and city on this site.</span></label>
+          <p class="review-error" id="review-error" role="alert"></p>
+          <button class="review-send" type="submit">Send review on WhatsApp</button>
+          <p class="review-note">WhatsApp opens with your review ready to send, and you can add a photo there. We check it against your order before publishing.</p>
+        </form>
+        <p class="review-thanks" id="review-thanks" hidden>Thank you! 💗 Please press send in WhatsApp. We'll publish your review after checking your order.</p>
+      </div>
+    </section>
+
     <!-- FAQ -->
     <section class="section faq" id="faq">
       <div class="section-head reveal">
@@ -272,7 +305,7 @@
     <p>Made with love for every girl. © <span class="year"></span> CrampEase · crampease.in</p>
   </footer>
 
-  <script src="script.js?v=20261106g"></script>
-  <script src="product-page.js?v=20261106g"></script>
+  <script src="script.js?v=20261106h"></script>
+  <script src="product-page.js?v=20261106h"></script>
 </body>
 </html>
