@@ -475,7 +475,8 @@ main, .nav, .footer { position: relative; z-index: 1; }
 }
 .gallery-track::-webkit-scrollbar { display: none; }
 .gallery-track img { flex: 0 0 100%; width: 100%; aspect-ratio: 1; object-fit: contain; scroll-snap-align: start; }
-.gallery-thumbs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 12px; }
+.gallery-thumbs { display: flex; gap: 8px; margin-top: 12px; }
+.gallery-thumbs button { flex: 1 1 0; min-width: 0; }
 .gallery-thumbs button {
   padding: 0; border: 3px solid transparent; border-radius: 16px; overflow: hidden;
   background: var(--white); cursor: pointer;
