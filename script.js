@@ -4,7 +4,8 @@
 
 // Each product has its own Razorpay Payment Page (razorpay.com → Payment Pages) for paying online.
 // The old ₹99 COD-advance page (https://rzp.io/rzp/crampease-cod) is no longer linked from the site.
-const COD_EXTRA = 0;   // COD costs this much more than paying online (0 = same price)
+// A product's codExtra is how much more cash on delivery costs than paying online (none = same price).
+const codPrice = (p) => p.price + (p.codExtra || 0);
 
 // COD orders need no payment: the order form posts to this Google Apps Script web app
 // (it saves each order to the "CrampEase COD orders" Google Sheet; the order bot alerts on Telegram).
@@ -31,7 +32,8 @@ const PRODUCTS = [
       "☁️ Soft, skin-friendly plush cover",
       "🎀 Comes in a pretty gift box",
     ],
-    price: 899,
+    price: 799, // online price (Razorpay page crampease-online must match)
+    codExtra: 100, // cash on delivery ₹899
     mrp: 1499,
     image: "images/product1.jpg",
     page: "belt.html", // has its own full product page
@@ -144,8 +146,8 @@ function selectProduct(id) {
   const pc = document.getElementById("pick-color");
   if (pc) pc.innerHTML = swatchesHtml(sel);
   fill("online", `₹${sel.price}`);
-  fill("cod", `₹${sel.price + COD_EXTRA}`);
-  fill("extra", `₹${COD_EXTRA}`);
+  fill("cod", `₹${codPrice(sel)}`);
+  fill("extra", `₹${sel.codExtra || 0}`);
   document.querySelectorAll("[data-pay=online]").forEach((a) => {
     a.href = sel.link;
     a.target = "_blank";
@@ -233,7 +235,7 @@ function payTip(link) {
 // Cash on delivery order form: no payment, we call to confirm. On success -> thank-you page (fires Purchase).
 function codForm() {
   const p = sel;
-  const total = p.price + COD_EXTRA;
+  const total = codPrice(p);
   const colorField = p.colors
     ? `<label>Colour<select name="color">${p.colors
         .map((c) => `<option value="${c.id}"${c.id === chosen[p.id] ? " selected" : ""}>${c.label}</option>`)
@@ -313,7 +315,7 @@ document.querySelectorAll("[data-pay=online]").forEach((a) =>
   a.addEventListener("click", () => track("InitiateCheckout", productData(sel, sel.price)))
 );
 document.querySelectorAll("[data-pay=cod]").forEach((a) =>
-  a.addEventListener("click", () => track("InitiateCheckout", productData(sel, sel.price + COD_EXTRA)))
+  a.addEventListener("click", () => track("InitiateCheckout", productData(sel, codPrice(sel))))
 );
 
 function toast(msg) {
