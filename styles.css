@@ -750,3 +750,17 @@ body.shop .policy a:not(.btn) { color: #c2255c; text-decoration: underline; }
 body.shop .policy .muted { color: #7a5a70; }
 body.shop .footer { color: #7a5a70; }
 
+/* home page: new belt images */
+.belt-look-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.belt-look-row a { display: block; border: 1px solid #f8dbe7; border-radius: 16px; overflow: hidden; background: #fff; }
+.belt-look-row img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.belt-look-more { text-align: center; margin-top: 20px; }
+@media (max-width: 680px) {
+  .belt-look-row {
+    display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 12px;
+    margin: 0 -16px; padding: 0 16px 6px; scrollbar-width: none;
+  }
+  .belt-look-row::-webkit-scrollbar { display: none; }
+  .belt-look-row a { flex: 0 0 88%; scroll-snap-align: center; }
+}
+
