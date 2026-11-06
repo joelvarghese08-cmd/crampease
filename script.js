@@ -4,7 +4,7 @@
 
 // Each product has its own Razorpay Payment Page (razorpay.com → Payment Pages) for paying online.
 // The old ₹99 COD-advance page (https://rzp.io/rzp/crampease-cod) is no longer linked from the site.
-const COD_EXTRA = 50;   // COD costs this much more than paying online
+const COD_EXTRA = 0;   // COD costs this much more than paying online (0 = same price)
 
 // COD orders need no payment: the order form posts to this Google Apps Script web app
 // (it saves each order to the "CrampEase COD orders" Google Sheet; the order bot alerts on Telegram).
