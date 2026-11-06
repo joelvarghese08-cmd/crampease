@@ -284,7 +284,7 @@ function codForm() {
     } catch (_) {
       btn.disabled = false;
       btn.textContent = `Place COD order · ₹${total}`;
-      err.innerHTML = `Couldn't place the order. Please try again, or call us on <a href="tel:+916282377040">+91 62823 77040</a>.`;
+      err.innerHTML = `Couldn't place the order. Please try again, or WhatsApp us on <a href="https://wa.me/916282377040">+91 62823 77040</a>.`;
     }
   };
   document.body.appendChild(m);
