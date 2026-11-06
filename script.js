@@ -34,7 +34,7 @@ const PRODUCTS = [
     ],
     price: 799, // online price (Razorpay page crampease-online must match)
     codExtra: 100, // cash on delivery ₹899
-    mrp: 1499,
+    mrp: 899,
     image: "images/product1.jpg",
     page: "belt.html", // has its own full product page
     badge: "Bestseller",
@@ -356,7 +356,6 @@ if (heroImg) useFallback(heroImg, "🌷", "Your product photo here");
 // render product cards
 const grid = document.getElementById("products"); // only on the home page
 if (grid) PRODUCTS.forEach((p, i) => {
-  const off = p.mrp ? Math.round((1 - p.price / p.mrp) * 100) : 0;
   const card = document.createElement("article");
   card.className = "card reveal";
   card.dataset.id = p.id;
@@ -371,7 +370,7 @@ if (grid) PRODUCTS.forEach((p, i) => {
     ${swatchesHtml(p)}
     <div class="price">
       <strong>₹${p.price}</strong>
-      ${p.mrp ? `<s>₹${p.mrp}</s><small>${off}% off</small>` : ""}
+      ${p.mrp ? `<s>₹${p.mrp}</s><small>₹${p.mrp - p.price} off for prepaid</small>` : ""}
     </div>
     ${p.page ? `<a class="card-more" href="${p.page}">See full details →</a>` : ""}
     <a class="btn" href="#order" data-pick="${p.id}">Buy now 💗</a>
