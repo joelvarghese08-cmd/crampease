@@ -31,9 +31,10 @@ const PRODUCTS = [
       "☁️ Soft, skin-friendly plush cover",
       "🎀 Comes in a pretty gift box",
     ],
-    price: 599,
+    price: 899,
     mrp: 1499,
     image: "images/product1.jpg",
+    page: "belt.html", // has its own full product page
     badge: "Bestseller",
     icon: "🔥",
   },
@@ -52,6 +53,7 @@ const PRODUCTS = [
     ],
     price: 399,
     image: "images/pads-red.jpg",
+    page: "pads.html",
     // colours = optional choices; each has a swatch colour and its own photo. The chosen colour
     // goes with COD orders to the bot; the Razorpay page asks for it again for online orders.
     colors: [
@@ -78,6 +80,7 @@ const PRODUCTS = [
     ],
     price: 499,
     image: "images/heatbag-grey.jpg",
+    page: "heatbag.html",
     // each design is its own Meesho listing: grey 76k7cw, brown dots 76k7cv, hearts 76k7cy, red 76k7cz
     colors: [
       { id: "grey", label: "Grey Dots", swatch: "#9a9ca0", image: "images/heatbag-grey.jpg" },
@@ -155,7 +158,8 @@ if (pick) {
 }
 // ad links like crampease.in/#order-pads open the order section with that product picked
 const hashPick = (location.hash.match(/^#order-(\w+)/) || [])[1];
-selectProduct(hashPick);
+// a product page names its product on <body data-product="...">
+selectProduct(hashPick || document.body.dataset.product);
 if (hashPick) addEventListener("load", () => document.getElementById("order").scrollIntoView());
 
 document.querySelectorAll("[data-pay=cod]").forEach((a) =>
@@ -280,7 +284,7 @@ function codForm() {
     } catch (_) {
       btn.disabled = false;
       btn.textContent = `Place COD order · ₹${total}`;
-      err.innerHTML = `Couldn't place the order. Please try again, or WhatsApp us on <a href="https://wa.me/916282377040">+91 62823 77040</a>.`;
+      err.innerHTML = `Couldn't place the order. Please try again, or call us on <a href="tel:+916282377040">+91 62823 77040</a>.`;
     }
   };
   document.body.appendChild(m);
@@ -296,7 +300,7 @@ const productData = (p, value) => ({
   value,
   currency: "INR",
 });
-track("ViewContent", productData(PRODUCTS[0], PRODUCTS[0].price));
+track("ViewContent", productData(sel, sel.price));
 document.querySelectorAll("[data-pay=online]").forEach((a) =>
   a.addEventListener("click", () => track("InitiateCheckout", productData(sel, sel.price)))
 );
@@ -340,8 +344,8 @@ const heroImg = document.querySelector('[data-fallback="hero"]');
 if (heroImg) useFallback(heroImg, "🌷", "Your product photo here");
 
 // render product cards
-const grid = document.getElementById("products");
-PRODUCTS.forEach((p, i) => {
+const grid = document.getElementById("products"); // only on the home page
+if (grid) PRODUCTS.forEach((p, i) => {
   const off = p.mrp ? Math.round((1 - p.price / p.mrp) * 100) : 0;
   const card = document.createElement("article");
   card.className = "card reveal";
@@ -359,6 +363,7 @@ PRODUCTS.forEach((p, i) => {
       <strong>₹${p.price}</strong>
       ${p.mrp ? `<s>₹${p.mrp}</s><small>${off}% off</small>` : ""}
     </div>
+    ${p.page ? `<a class="card-more" href="${p.page}">See full details →</a>` : ""}
     <a class="btn" href="#order" data-pick="${p.id}">Buy now 💗</a>
     </div>`;
   useFallback(card.querySelector("img"), p.icon || "🌸", p.name);

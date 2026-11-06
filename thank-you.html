@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=20261105b" />
+  <link rel="stylesheet" href="styles.css?v=20261106e" />
   <!-- Meta Pixel -->
   <script>
     !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -26,14 +26,14 @@
   <!-- End Meta Pixel -->
   <script>
     // Razorpay Payment Pages redirect here after a successful payment:
-    //   thank-you.html?type=online  (₹599 paid)   or   thank-you.html?type=cod  (₹99 advance on a ₹649 order)
+    //   thank-you.html?type=online  (paid in full)   or   thank-you.html?type=cod  (₹99 advance on a ₹649 order)
     // Razorpay's own "payment complete" pixel event never reached Meta, so the Purchase is sent from here.
     // value = the full order value, so Meta learns what a sale is worth. Sent once per payment (reloads don't repeat it).
     (function () {
       //   thank-you.html?type=codfull&product=...&order_id=...  (COD order form, nothing paid yet)
       //   &product=pads / heatbag pick the product (COD = online price + ₹50); no product = the belt
       var PRODUCTS = {
-        belt: { name: "CrampEase Warm Hug Belt", price: 599 },
+        belt: { name: "CrampEase Warm Hug Belt", price: 899 },
         pads: { name: "CrampEase Reusable Cloth Pads · Set of 5", price: 399 },
         heatbag: { name: "CrampEase Electric Heat Bag · 1000 ml", price: 499 },
       };
@@ -74,7 +74,7 @@
       <ul>
         <li data-type="online">You've paid <b data-value></b> in full — nothing more to pay at delivery.</li>
         <li data-type="cod">Your <b>₹99</b> advance is received. Please keep <b>₹550</b> ready to pay when your parcel arrives.</li>
-        <li data-type="codfull">Your cash on delivery order is placed. <b>We'll call or WhatsApp you shortly to confirm</b> — please keep your phone handy.</li>
+        <li data-type="codfull">Your cash on delivery order is placed. <b>We'll call you shortly to confirm</b> — please keep your phone handy.</li>
         <li data-type="codfull">Keep <b data-value></b> ready to pay in cash when your parcel arrives.</li>
         <li>We dispatch within 1–2 working days. Delivery usually takes 4–7 working days, and it's free.</li>
         <li>You'll get tracking details by SMS once it ships.</li>
