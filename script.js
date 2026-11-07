@@ -282,14 +282,19 @@ function codForm() {
     btn.disabled = true;
     btn.textContent = "Placing your order…";
     err.textContent = "";
-    d.page = location.href.slice(0, 200);
+    // A phone's autofill can fill the hidden anti-bot field. The receiver drops any order that sends it,
+    // so never send it: keep the order and mark the row for a look instead.
+    const autofilled = !!d.website;
+    delete d.website;
+    d.page = (autofilled ? "CHECK-hidden-field-filled " : "") + location.href.slice(0, 170);
     // the sheet's "note" column carries the product code (and colour, "pads:navy") for the order bot
     d.note = d.color ? `${p.id}:${d.color}` : p.id;
     delete d.color;
     try {
       const r = await fetch(COD_FORM_URL, { method: "POST", body: new URLSearchParams(d) });
       const res = await r.json();
-      if (!res.ok) throw new Error(res.error || "not saved");
+      // no id means no row was saved, so don't show the thank-you page or report a Purchase
+      if (!res.ok || !res.id) throw new Error(res.error || "not saved");
       location.href = `thank-you.html?type=codfull&product=${p.id}&order_id=${encodeURIComponent(res.id)}`;
     } catch (_) {
       btn.disabled = false;

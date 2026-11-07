@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&family=Quicksand:wght@400;500;600;700&family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=20261107b" />
+  <link rel="stylesheet" href="styles.css?v=20261107c" />
   <!-- Meta Pixel -->
   <script>
     !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -46,7 +46,9 @@
       var key = "purchase_sent:" + (payId || type + ":" + new Date().toDateString());
       var sent = false;
       try { sent = localStorage.getItem(key) === "1"; } catch (e) {}
-      if (!sent) {
+      // a COD order is real only if the receiver saved it and returned its id
+      var realOrder = type !== "codfull" || /^cod_/.test(q.get("order_id") || "");
+      if (!sent && realOrder) {
         var data = { value: value, currency: "INR", content_name: prod.name, content_ids: [pid],
                      content_type: "product", num_items: 1, payment_type: type };
         fbq("track", "Purchase", data, payId ? { eventID: payId } : {});
