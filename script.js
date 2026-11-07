@@ -232,6 +232,11 @@ function payTip(link) {
   document.body.appendChild(m);
 }
 
+const INDIAN_STATES = ["Andaman and Nicobar Islands", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chandigarh", "Chhattisgarh",
+  "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jammu and Kashmir", "Jharkhand",
+  "Karnataka", "Kerala", "Ladakh", "Lakshadweep", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha",
+  "Puducherry", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"];
+
 // Cash on delivery order form: no payment, we call to confirm. On success -> thank-you page (fires Purchase).
 function codForm() {
   const p = sel;
@@ -250,11 +255,17 @@ function codForm() {
       ${colorField}
       <label>Full name<input name="name" autocomplete="name" required maxlength="80" /></label>
       <label>Phone (10 digits)<input name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" required maxlength="14" /></label>
-      <label>Full address (house, street, landmark)<textarea name="address" rows="2" autocomplete="street-address" required maxlength="300"></textarea></label>
+      <label>House / flat no. and building<input name="house" autocomplete="address-line1" required maxlength="100" /></label>
+      <label>Street, area or village<input name="area" autocomplete="address-line2" required maxlength="120" /></label>
+      <label>Landmark (optional)<input name="landmark" maxlength="70" placeholder="Near..." /></label>
       <div class="cod-row">
+        <label>City / town<input name="city" autocomplete="address-level2" required maxlength="50" /></label>
         <label>Pincode<input name="pincode" inputmode="numeric" autocomplete="postal-code" required maxlength="6" /></label>
-        <label>City &amp; state<input name="city_state" autocomplete="address-level2" required maxlength="80" /></label>
       </div>
+      <label>State<select name="state" autocomplete="address-level1" required>
+        <option value="">Select your state</option>
+        ${INDIAN_STATES.map((s) => `<option>${s}</option>`).join("")}
+      </select></label>
       <input name="website" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true" />
       <p class="cod-error" role="alert"></p>
       <button class="btn" type="submit">Place COD order · ₹${total}</button>
@@ -273,11 +284,19 @@ function codForm() {
     const bad =
       !d.name.trim() ? "Please enter your name." :
       d.phone.length !== 10 ? "Please enter a 10-digit phone number." :
-      d.address.trim().length < 10 ? "Please enter your full address." :
-      !/^\d{6}$/.test(d.pincode.trim()) ? "Please enter a 6-digit pincode." :
-      !d.city_state.trim() ? "Please enter your city and state." : "";
+      !d.house.trim() ? "Please enter your house or flat number." :
+      d.area.trim().length < 3 ? "Please enter your street, area or village." :
+      d.city.trim().length < 2 ? "Please enter your city or town." :
+      !/^[1-9]\d{5}$/.test(d.pincode.trim()) ? "Please enter a valid 6-digit pincode." :
+      !d.state ? "Please select your state." : "";
     if (bad) return (err.textContent = bad);
     if (!COD_FORM_URL) return (err.textContent = "COD orders open very soon 💗 Please pay online for now.");
+    // the sheet keeps its address and city_state columns, so the order bot and Meesho sheet work as before
+    const landmark = d.landmark.trim();
+    d.address = [d.house.trim(), d.area.trim(), landmark && (/^near\b/i.test(landmark) ? landmark : `Near ${landmark}`)].filter(Boolean).join(", ");
+    d.city_state = `${d.city.trim()}, ${d.state}`;
+    d.pincode = d.pincode.trim();
+    ["house", "area", "landmark", "city", "state"].forEach((k) => delete d[k]);
     const btn = form.querySelector("[type=submit]");
     btn.disabled = true;
     btn.textContent = "Placing your order…";
