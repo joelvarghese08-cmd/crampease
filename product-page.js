@@ -40,7 +40,7 @@
 })();
 
 // Reviews live in script.js (REVIEWS). The WhatsApp number for sending one:
-var REVIEW_WHATSAPP = "916282377040";
+var REVIEW_WHATSAPP = "918113087040";
 
 (function () {
   var list = REVIEWS[sel.id] || [];
